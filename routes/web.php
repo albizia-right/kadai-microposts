@@ -11,10 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+Route::get('/', 'MicropostsController@index');
 // ユーザ登録
 Route::get('signup', 'Auth\RegisterController@showRegistrationForm')->name('signup.get');
 Route::post('sighup', 'Auth\RegisterController@register')->name('signup.post');
@@ -25,4 +22,5 @@ Route::get('logout', 'Auth\LoginController@logout')->name('logout.get');
 // 認証付きのルーティング
 Route::group(['middleware' => ['auth']], function() {
     Route::resource('users', 'UsersController', ['only' => ['index', 'show']]);
+    Route::resource('microposts', 'MicropostsController', ['only' => ['store', 'destroy']]);
 });
