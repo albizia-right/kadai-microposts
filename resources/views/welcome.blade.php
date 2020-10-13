@@ -10,15 +10,15 @@
                     </div>
                     <div class="card-body">
                         {{-- 認証済みユーザのメールアドレスをもとにGravatarを取得して表示 --}}
-                        <img class="roubded fluid" src="{{ Gravatar::get(Auth::user()->email, ['size' => 500]) }}" alt="">
+                        <img class="roubded fluid" src="{{ Gravatar::get(Auth::user()->email, ['size' => 50]) }}" alt="">
                     </div>
                 </div>
             </aside>
             <div class="col-sm-8">
                 {{-- 投稿フォーム --}}
-                @includde('microposts.form')
+                @include('microposts.form')
                 {{-- 投稿一覧 --}}
-                @include('microposts.micropposts')
+                @include('microposts.microposts')
             </div>
         </div>
     @else

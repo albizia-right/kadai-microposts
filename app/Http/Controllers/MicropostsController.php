@@ -13,7 +13,7 @@ class MicropostsController extends Controller
             // 認証済みユーザを取得
             $user = \Auth::user();
             // ユーザの投稿の一覧を作成日時の降順で取得
-            $microposts = $user->microposts()->orderBy('creared_at', 'desc')->peginate(10);
+            $microposts = $user->microposts()->orderBy('created_at', 'desc')->paginate(10);
             
             $data = [
                 'user' => $user,
@@ -29,7 +29,7 @@ class MicropostsController extends Controller
     {
         // バリデーション
         $request->validate([
-            'content' => 'require|max:255',
+            'content' => 'required|max:255',
         ]);
         
         // 認証済みユーザ（閲覧者）の投稿として作成（リクエストされた値をもとに作成）
@@ -44,29 +44,16 @@ class MicropostsController extends Controller
     public function destroy($id) 
     {
         // idの値で投稿を検索して取得
-        $micropost = \App\Micropost::findOrFail();
+        $micropost = \App\Micropost::findOrFail($id);
         
         // 認証済みユーザ（閲覧者）がその投稿の所有者である場合は、投稿を削除
         if (\Auth::id() === $micropost->user_id) {
-            $micropost = delete();
+            $micropost->delete();
         }
+        
+        // 前のURLへリダイレクトさせる
+        return back();
     }
     
-    public function show($id)
-    {
-        // idの値でユーザを検索して取得
-        $user = User::findOrFail($id);
-        
-        // 関係するモデルの件数をロード
-        $user = roadRelationshipCounts();
-        
-        // ユーザの投稿一覧を作成日時の降順で取得
-        $microposts = $user->microposts()->orderBy('created_at', 'desc')->paginate(10);
-        
-        // ユーザ詳細ビューでそれらを表示
-        return view(users.show, [
-            'user' => $user,
-            'microposts' => $picroposts,
-        ]);
-    }
+    
 }
