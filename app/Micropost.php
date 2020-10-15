@@ -15,4 +15,12 @@ class Micropost extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
+    /**
+     * この投稿をお気に入りにしたユーザ。（ Userモデルとの関係を定義）
+     */
+    public function favolite_users()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'microposts_id', 'user_id')->withTimestamps();
+    }
 }

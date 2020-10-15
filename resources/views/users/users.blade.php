@@ -1,4 +1,6 @@
 @if (count($users) > 0)
+    {{-- ページネーションのリンク --}}
+    {{ $users->links() }}
     <ul class="list-unstyled">
         @foreach ($users as $user)
             <li class="media">

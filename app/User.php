@@ -50,7 +50,7 @@ class User extends Authenticatable
      */
     public function loadRelationshipCounts() 
     {
-        $this->loadcount('microposts', 'followings', 'followers');
+        $this->loadcount('microposts', 'followings', 'followers', 'favorites');
     }
     
     /**
@@ -138,5 +138,48 @@ class User extends Authenticatable
         $userIds[] = $this->id;
         // それらのユーザが所有する投稿に絞り込む
         return Micropost::whereIn('user_id', $userIds);
+    }
+    
+    /**
+     * このユーザがお気に入りにした投稿。（ Micropostsモデルとの関係を定義）
+     */
+    public function favorites()
+    {
+        return $this->belongsToMany(Micropost::class, 'favorites', 'user_id', 'microposts_id')->withTimestamps();
+    }
+    
+    public function is_favorite($micropostId)
+    {
+        return $this->favorites()->where('microposts_id', $micropostId)->exists();
+    }
+    
+    public function favorite($micropostId)
+    {
+        // すでにお気に入りにしているかの確認
+        $exist = $this->is_favorite($micropostId);
+        
+        if ($exist) {
+            // すでにお気に入りにしていれば何もしない
+            return false;
+        } else {
+            // お気に入りでなければお気に入りに追加する
+            $this->favorites()->attach($micropostId);
+            return true;
+        }
+    }
+    
+    public function unfavorite($micropostId)
+    {
+        // すでにお気に入りにしているかの確認
+        $exist = $this->favorites()->where('microposts_id', $micropostId)->exists();
+        
+        if ($exist) {
+            // お気に入りにしていれば外す
+            $this->favorites()->detach($micropostId);
+            return true;
+        } else {
+            // お気に入りでなければ何もしない
+            return false;
+        }
     }
 }
